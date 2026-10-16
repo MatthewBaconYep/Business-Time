@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8" /><title>Engine tests</title></head>
+<body style="font: 14px/1.5 ui-monospace, monospace; padding: 20px; white-space: pre-wrap;">
+<script>
+  // Run the Node test file in the browser: a tiny require() and console.log shim.
+  window.module = {};
+  var out = [];
+  var log = function (s) { out.push(String(s)); document.body.textContent = out.join("\n"); };
+  var shim = { log: log };
+  function require(name) {
+    if (name === "assert") return Object.assign(function (v, m) { if (!v) throw new Error(m || "assert"); }, {
+      strictEqual: function (a, b) { if (a !== b) throw new Error("Expected " + JSON.stringify(b) + ", got " + JSON.stringify(a)); },
+      deepStrictEqual: function (a, b) { if (JSON.stringify(a) !== JSON.stringify(b)) throw new Error("Expected " + JSON.stringify(b) + ", got " + JSON.stringify(a)); }
+    });
+    return window.BT;
+  }
+</script>
+<script src="../engine.js"></script>
+<script>
+  fetch("engine.test.js").then(function (r) { return r.text(); }).then(function (src) {
+    try { new Function("require", "console", src)(require, shim); window.TESTS = "pass"; }
+    catch (e) { log("FAIL: " + e.message); window.TESTS = "fail: " + e.message; }
+  });
+</script>
+</body></html>

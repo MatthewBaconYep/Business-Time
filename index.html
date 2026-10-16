@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="light" />
+    <title>Business Time</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css?v=2" />
+  </head>
+  <body>
+    <div id="root"></div>
+    <noscript>Business Time needs JavaScript.</noscript>
+    <script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+    <script>
+      // Supabase project: the Plantalog project, so the same Plantalog login works.
+      // Data lives in its own table, bt_data, locked to each user by row-level security.
+      const SUPA_URL = "https://rpplsisxmjyhwwfwmcnl.supabase.co";
+      const SUPA_KEY = "sb_publishable_BmUMDvDgTi1B3E-HC0KZrA_tmw9dsoY";
+      if (window.supabase) {
+        window.__supabase_client = supabase.createClient(SUPA_URL, SUPA_KEY, {
+          auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true, storageKey: "bt-auth" }
+        });
+      }
+    </script>
+    <script>
+      // GitHub Pages caches the page for 10 minutes. On launch and whenever the
+      // app comes back to the foreground, compare version.txt and reload through
+      // a fresh URL if a new deploy is out (never while a sheet or field is open).
+      (function () {
+        var HERE = "2";
+        var pending = null;
+        function busy() {
+          var el = document.activeElement;
+          if (el && (el.tagName === "INPUT" || el.tagName === "TEXTAREA" || el.tagName === "SELECT")) return true;
+          return !!document.querySelector(".overlay");
+        }
+        function apply(v) {
+          if (location.search.indexOf("v=" + v) !== -1) return;
+          if (busy()) { pending = v; return; }
+          pending = null;
+          location.replace(location.pathname + "?v=" + v);
+        }
+        function check() {
+          if (/[?&]local\b/.test(location.search)) return;
+          fetch("version.txt?t=" + Date.now(), { cache: "no-store" })
+            .then(function (r) { return r.ok ? r.text() : null; })
+            .then(function (v) { v = v && v.trim(); if (v && v !== HERE) apply(v); })
+            .catch(function () {});
+        }
+        check();
+        document.addEventListener("visibilitychange", function () { if (!document.hidden) check(); });
+        setInterval(function () { if (pending) apply(pending); }, 3000);
+      })();
+    </script>
+    <script src="engine.js?v=2"></script>
+    <script src="https://unpkg.com/@babel/standalone@7.25.6/babel.min.js"></script>
+    <script type="text/babel" data-presets="react" src="bt.jsx?v=2"></script>
+  </body>
+</html>
