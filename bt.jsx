@@ -1005,8 +1005,11 @@ function AdminView(props) {
 }
 
 // ---------- auth ----------
+// Same as GDBB's: log in, create an account, or get a reset link. Accounts are
+// shared with Plantalog (same Supabase project); a new account starts with the
+// default categories and no projects.
 function AuthScreen() {
-  const [mode, setMode] = useState("in");
+  const [mode, setMode] = useState("in"); // in | up | reset
   const [email, setEmail] = useState("");
   const [pw, setPw] = useState("");
   const [msg, setMsg] = useState(null);
@@ -1019,6 +1022,10 @@ function AuthScreen() {
       if (mode === "in") {
         const { error } = await sb().auth.signInWithPassword({ email, password: pw });
         if (error) throw error;
+      } else if (mode === "up") {
+        const { data, error } = await sb().auth.signUp({ email, password: pw, options: { emailRedirectTo: location.origin + location.pathname } });
+        if (error) throw error;
+        if (!data.session) setMsg("Check your email to confirm, then log in.");
       } else {
         const { error } = await sb().auth.resetPasswordForEmail(email, { redirectTo: location.origin + location.pathname });
         if (error) throw error;
@@ -1027,28 +1034,31 @@ function AuthScreen() {
     } catch (err) { setMsg(err.message || "Something went wrong."); }
     setBusy(false);
   }
+  const to = m => { setMode(m); setMsg(null); };
+  const title = mode === "in" ? "Log In" : mode === "up" ? "Create Account" : "Reset Password";
   return (
     <div className="app">
       <Glitter />
       <div className="auth">
         <div className="auth-brand"><Mark size={64} /><h1>Business Time</h1><div className="kicker" style={{ marginTop: 6 }}>Delphina Photography</div></div>
         <form className="card stack auth-card" onSubmit={go}>
-          <h2 className="auth-title">{mode === "in" ? "Log In" : "Reset Password"}</h2>
-          <p className="small muted" style={{ margin: 0 }}>{mode === "in" ? "Use your Plantalog email and password." : "Enter your email and we’ll send a link to set a new password."}</p>
+          <h2 className="auth-title">{title}</h2>
+          {mode === "reset" && <p className="small muted" style={{ margin: 0 }}>Enter your email and we’ll send a link to set a new password.</p>}
           <div className="field"><label>Email</label><input className="input" type="email" autoComplete="email" required autoFocus value={email} onChange={e => setEmail(e.target.value)} /></div>
-          {mode === "in" && <div className="field"><label>Password</label><input className="input" type="password" autoComplete="current-password" required value={pw} onChange={e => setPw(e.target.value)} /></div>}
+          {mode !== "reset" && <div className="field"><label>Password</label><input className="input" type="password" autoComplete={mode === "up" ? "new-password" : "current-password"} required minLength={6} value={pw} onChange={e => setPw(e.target.value)} /></div>}
           {msg && <p className="small auth-msg">{msg}</p>}
-          <button className="btn btn-solid btn-block" disabled={busy}>{busy ? "One moment…" : mode === "in" ? "Log In" : "Send Reset Link"}</button>
+          <button className="btn btn-solid btn-block" disabled={busy}>{busy ? "One moment…" : mode === "in" ? "Log In" : mode === "up" ? "Create Account" : "Send Reset Link"}</button>
           <div className="row wrap small auth-links">
-            {mode === "in"
-              ? <button type="button" className="btn btn-ghost btn-sm" onClick={() => { setMode("reset"); setMsg(null); }}>Forgot password?</button>
-              : <button type="button" className="btn btn-ghost btn-sm" onClick={() => { setMode("in"); setMsg(null); }}>Back to log in</button>}
+            {mode === "in" && <button type="button" className="btn btn-ghost btn-sm" onClick={() => to("reset")}>Forgot password?</button>}
+            {mode === "in" && <button type="button" className="btn btn-ghost btn-sm" onClick={() => to("up")}>Create an account</button>}
+            {mode !== "in" && <button type="button" className="btn btn-ghost btn-sm" onClick={() => to("in")}>Back to log in</button>}
           </div>
         </form>
       </div>
     </div>
   );
 }
+
 function NewPasswordSheet({ onClose, toast }) {
   const [pw, setPw] = useState("");
   return (

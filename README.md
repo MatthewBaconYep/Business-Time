@@ -14,7 +14,7 @@ Time tracking for Delphina Photography. Create projects, time the work with a bi
 3. **Pages**: repo Settings → Pages → Deploy from branch `main`, root. The `CNAME` file sets the domain.
 4. **DNS**: at the plantalog.com DNS host, add `CNAME bt → matthewbaconyep.github.io`.
 
-Sign-in uses the existing Plantalog login. There is no "Create an account" button.
+Sign-in uses the Plantalog login (same Supabase project). "Create an account" is there too; a new account starts with the default categories and no projects.
 
 Local preview: `python3 dev.py`, then open `http://localhost:8760/?local` (device-only mode, no login).
 
