@@ -145,6 +145,8 @@ function Icon({ name, size = 18, stroke = 1.7 }) {
     out: <><path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3" /><path d="M10 16l4-4-4-4M14 12H4" /></>,
     download: <><path d="M12 4v11M7 10l5 5 5-5M5 20h14" /></>,
     trash: <path d="M4 7h16M9 7V4.5h6V7M6.5 7l1 13h9l1-13" />,
+    bin: <><path d="M4 6.5h16M9.5 6.5V4h5v2.5" /><path d="M6 6.5l1 13.5h10l1-13.5" /><path d="M10 10.5v6M14 10.5v6" /></>,
+    floppy: <><path d="M5 4h11.5L20 7.5V19a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1z" /><path d="M8 4v5h7V4" /><rect x="7.5" y="13" width="9" height="7" rx="0.5" /></>,
   }[name];
   return <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={stroke} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">{p}</svg>;
 }
@@ -713,12 +715,13 @@ function Stopwatch({ data, update, selectedId, toast }) {
           Save and Discard are greyed while running or with nothing to save; without a category it
           just marks the Category label red. */}
       <div className="controls">
-        <button className="big-btn go" onClick={start} disabled={disabled || running}>{t && !running ? "Resume" : "Start"}</button>
-        <button className="big-btn halt" onClick={stop} disabled={!running}>Stop</button>
+        {/* Symbols instead of words; the names stay as labels for hover and screen readers. */}
+        <button className="big-btn go" onClick={start} disabled={disabled || running} aria-label={t && !running ? "Resume" : "Start"} title={t && !running ? "Resume" : "Start"}><Icon name="play" size={36} /></button>
+        <button className="big-btn halt" onClick={stop} disabled={!running} aria-label="Stop" title="Stop"><Icon name="stop" size={32} /></button>
       </div>
       <div className="controls-2">
-        <button className="big-btn save" onClick={save} disabled={running || !t || secs < 1}>Save</button>
-        <button className="big-btn toss" onClick={discard} disabled={!t || running}>Discard</button>
+        <button className="big-btn save" onClick={save} disabled={running || !t || secs < 1} aria-label="Save" title="Save"><Icon name="floppy" size={26} stroke={1.8} /></button>
+        <button className="big-btn toss" onClick={discard} disabled={!t || running} aria-label="Discard" title="Discard"><Icon name="bin" size={26} stroke={1.8} /></button>
       </div>
 
       <div className="picker">
