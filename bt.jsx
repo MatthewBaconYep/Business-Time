@@ -1198,10 +1198,12 @@ function App() {
   const openSheet = useCallback(s => setSheet(s), []);
   const close = useCallback(() => setSheet(null), []);
 
+  // scope "local": sign out of Business Time only. The default ("global") ends every
+  // session for the account, logging you out of Plantalog, GDBB and the rest too.
   async function signOut() {
     await flush();
     if (local) { location.replace(location.pathname); return; }
-    await sb().auth.signOut();
+    await sb().auth.signOut({ scope: "local" });
   }
   async function resolveConflict(keepMine) {
     const v = await Store.remoteVersion(userRef.current.id);
@@ -1219,7 +1221,7 @@ function App() {
       <p className="small faint" style={{ marginTop: 6 }}>{err}</p>
       <div className="row" style={{ justifyContent: "center", marginTop: 16 }}>
         <button className="btn btn-secondary" onClick={() => location.reload()}>Try again</button>
-        {!local && <button className="btn btn-ghost" onClick={() => sb() && sb().auth.signOut().then(() => setPhase("auth"))}>Sign out</button>}
+        {!local && <button className="btn btn-ghost" onClick={() => sb() && sb().auth.signOut({ scope: "local" }).then(() => setPhase("auth"))}>Sign out</button>}
       </div>
     </div></div>
   );
