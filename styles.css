@@ -275,13 +275,12 @@ select.input:disabled { color: #b4b6c4; background-color: var(--surface-2); curs
    Placed like GDBB's: the header spans the window, brand at the far left,
    tabs at the far right, 24px in from each edge. */
 .app { overflow-x: clip; }
-.topbar { position: relative; display: grid; grid-template-columns: auto 1fr auto auto; align-items: center; gap: 16px;
+.topbar { position: relative; display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 16px;
   margin: 0 calc(50% - 50vw) 8px; padding: 14px 24px 10px; }
 .topbar .brand { margin-right: 0; }
 .topbar .brand-name { font-size: 21px; }
 .topbar .brand .mark { margin: -5px 0; }
-.topbar .sync { grid-column: 3; }
-.topbar .tabs-top { grid-column: 4; }
+.topbar .tabs-top { grid-column: 3; }
 
 /* ---------- home layout ---------- */
 .home { display: grid; grid-template-columns: minmax(380px, 1fr) minmax(460px, 1.08fr); gap: 28px; align-items: start; }

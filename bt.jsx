@@ -1249,9 +1249,6 @@ function App() {
             <Mark size={48} />
             <div className="brand-name">Business Time<span>Delphina Photography</span></div>
           </div>
-          <span className={"sync " + status} title={status === "error" ? "Not saved yet. Retrying." : status === "saving" ? "Saving" : "All changes saved"}>
-            <i />{local ? "Preview" : status === "error" ? "Not saved" : status === "saving" ? "Saving" : "Saved"}
-          </span>
           <nav className="tabs-top" aria-label="Sections">
             {[["home", "Home"], ["admin", "Setup"]].map(([k, l]) => <button key={k} aria-current={tab === k ? "page" : undefined} onClick={() => setTab(k)}>{l}</button>)}
           </nav>
