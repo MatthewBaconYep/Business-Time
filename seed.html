@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Make Seed Data</title>
+  <style>
+    body { margin: 0; padding: 40px 24px; background: #fbfaff; color: #1b1d2b; font: 15px/1.5 Inter, system-ui, sans-serif; }
+    main { max-width: 520px; margin: 0 auto; background: #fff; border-radius: 16px; padding: 24px; box-shadow: 0 8px 28px rgba(60, 40, 120, .1), 0 0 0 1px rgba(27, 29, 43, .11); }
+    h1 { font-size: 22px; font-weight: 500; margin: 0 0 12px; }
+    ul { padding-left: 20px; } button { font: inherit; font-weight: 500; padding: 10px 18px; border-radius: 10px; border: 0; background: #1b1d2b; color: #fff; cursor: pointer; }
+    button:disabled { opacity: .4; cursor: default; } .note { color: #555a6b; font-size: 14px; }
+  </style>
+</head>
+<body>
+<main>
+  <h1>Make Seed Data</h1>
+  <p class="note">Takes the Business Time preview data saved in this browser and writes a private SQL file for starting her account with it. Only works with <code>python3 dev.py</code> running.</p>
+  <div id="summary"></div>
+  <button id="go">Make Seed File</button>
+  <p id="out" class="note"></p>
+</main>
+<script>
+  // Development only: reads the ?local preview data from this browser.
+  var raw = null; try { raw = localStorage.getItem("bt-local-v1"); } catch (e) {}
+  var d = raw ? JSON.parse(raw) : null;
+  var sum = document.getElementById("summary"), go = document.getElementById("go"), out = document.getElementById("out");
+  if (!d) { sum.innerHTML = "<p>No preview data in this browser. Open this page in the browser you used for the preview.</p>"; go.disabled = true; }
+  else {
+    var li = function (s) { return "<li>" + s.replace(/</g, "&lt;") + "</li>"; };
+    // Archived items are left out of the seed (dev.py strips them too).
+    var live = (d.projects || []).filter(function (p) { return !p.archived; });
+    var ids = live.map(function (p) { return p.id; });
+    sum.innerHTML = "<p class='note'>Archived projects, categories and types are left out.</p><ul>" +
+      li(live.length + " projects: " + (live.map(function (p) { return p.name; }).join(", ") || "none")) +
+      li((d.records || []).filter(function (r) { return ids.indexOf(r.projectId) >= 0; }).length + " time records") +
+      li((d.projectCategories || []).filter(function (c) { return !c.archived; }).length + " project categories, " + (d.workCategories || []).filter(function (c) { return !c.archived; }).length + " work categories") +
+      "</ul>";
+  }
+  go.onclick = function () {
+    go.disabled = true;
+    fetch("/save-seed", { method: "POST", headers: { "Content-Type": "application/json" }, body: raw })
+      .then(function (r) { return r.json(); })
+      .then(function (j) { out.textContent = "Done. Saved to " + j.file + ". Head back to Claude."; })
+      .catch(function () { out.textContent = "Couldn't reach the preview server. Is python3 dev.py running?"; go.disabled = false; });
+  };
+</script>
+</body>
+</html>
