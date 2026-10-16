@@ -1073,7 +1073,26 @@ function NewPasswordSheet({ onClose, toast }) {
 }
 
 // ---------- app ----------
+// The same rotating loading messages as GDBB, one per load, in order.
+const LOADING_MESSAGES = [
+  "What a cool guy Bacon is...",
+  "Right this way, Glitter Queen...",
+  "WHAT IS WRONG WITH ME TODAY?!...",
+  "I'll have the shrimp tacos...",
+  "What even is money? ¯\\_(ツ)_/¯...",
+  "What the hell's that's goin' on out there? POPPERRRRRS...",
+  "Point for me...",
+  "Budgeting isn't hard, fucktard...",
+];
+
 function App() {
+  const [loadingMsg] = useState(() => {
+    const i = (parseInt(safeLS.get("bt-load-msg"), 10) + 1) % LOADING_MESSAGES.length || 0;
+    safeLS.set("bt-load-msg", String(i));
+    return LOADING_MESSAGES[i];
+  });
+  const [held, setHeld] = useState(true); // keep the loading screen up long enough to read, like GDBB
+  useEffect(() => { const t = setTimeout(() => setHeld(false), 3000); return () => clearTimeout(t); }, []);
   const [phase, setPhase] = useState("loading"); // loading | auth | ready | error
   const [session, setSession] = useState(null);
   const [local, setLocal] = useState(() => /[?&]local\b/.test(location.search));
@@ -1188,7 +1207,7 @@ function App() {
     else loadFor(userRef.current);
   }
 
-  if (phase === "loading") return <div className="app"><Glitter /><div className="loading"><Mark size={64} /><p style={{ marginTop: 12 }}>Getting the stopwatch ready…</p></div></div>;
+  if (phase === "loading" || held) return <div className="app"><Glitter /><div className="loading"><Mark size={64} /><p style={{ marginTop: 12 }}>{loadingMsg}</p></div></div>;
   if (phase === "auth") return <AuthScreen />;
   if (phase === "error") return (
     <div className="app"><Glitter /><div className="loading">

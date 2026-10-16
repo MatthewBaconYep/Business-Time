@@ -9,7 +9,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="styles.css?v=3" />
+    <link rel="stylesheet" href="styles.css?v=4" />
   </head>
   <body>
     <div id="root"></div>
@@ -33,7 +33,7 @@
       // app comes back to the foreground, compare version.txt and reload through
       // a fresh URL if a new deploy is out (never while a sheet or field is open).
       (function () {
-        var HERE = "3";
+        var HERE = "4";
         var pending = null;
         function busy() {
           var el = document.activeElement;
@@ -58,8 +58,8 @@
         setInterval(function () { if (pending) apply(pending); }, 3000);
       })();
     </script>
-    <script src="engine.js?v=3"></script>
+    <script src="engine.js?v=4"></script>
     <script src="https://unpkg.com/@babel/standalone@7.25.6/babel.min.js"></script>
-    <script type="text/babel" data-presets="react" src="bt.jsx?v=3"></script>
+    <script type="text/babel" data-presets="react" src="bt.jsx?v=4"></script>
   </body>
 </html>
